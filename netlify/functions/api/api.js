@@ -70,7 +70,7 @@ exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
         return bridge;
     };
     return async function handler(event, context) {
-        console.log("event", event)
+        context.callbackWaitsForEmptyEventLoop = false;
         var _a, _b, _c;
         let requestMode = mode;
         // Ensure that paths are encoded - but don't double-encode them
