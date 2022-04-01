@@ -1,0 +1,48 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type AnnotationsAnnotation {
+  className      String
+  color          String
+  formatedDate   String
+  guid           String
+  number_color   String
+  props          AnnotationsAnnotationProps[]
+  tftlabsVersion Int
+}
+
+type AnnotationsAnnotationProps {
+  annotation_guid String
+  date            String
+  end             AnnotationsAnnotationPropsEnd
+  page_number     String
+  pin_index       String
+  revision        Int
+  start           AnnotationsAnnotationPropsStart
+  timestamp       Float
+}
+
+type AnnotationsAnnotationPropsEnd {
+  x Float
+  y Float
+}
+
+type AnnotationsAnnotationPropsStart {
+  x Float
+  y Float
+}
+
+model annotations {
+  id         String                  @id @default(auto()) @map("_id") @db.ObjectId
+  annotation AnnotationsAnnotation[]
+  id_        Int                     @map("id")
+
+  @@index([id], map: "id_1")
+}
