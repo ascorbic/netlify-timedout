@@ -1,2 +1,17 @@
 [[plugins]]
 package = "@netlify/plugin-nextjs"
+
+[build]
+command = "npm run build"
+publish = ".next"
+
+[functions]
+included_files = ["!node_modules/**/*.dylib", "!node_modules/**/*.dylib.node"]
+
+[dev]
+framework = "#static"
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/api"
+status = 200
