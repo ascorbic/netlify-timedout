@@ -15,3 +15,26 @@ framework = "#static"
 from = "/api/*"
 to = "/.netlify/functions/api"
 status = 200
+
+[functions.api]
+included_files = [
+    ".env",
+    ".env.local",
+    ".env.production",
+    ".env.production.local",
+    ".next/server/**",
+    ".next/serverless/**",
+    ".next/*.json",
+    ".next/BUILD_ID",
+    ".next/static/chunks/webpack-middleware*.js",
+    "!.next/server/**/*.js.nft.json",
+    "!node_modules/next/dist/compiled/@ampproject/toolbox-optimizer/**/*",
+    "!node_modules/next/dist/server/lib/squoosh/**/*.wasm",
+    "!node_modules/next/dist/next-server/server/lib/squoosh/**/*.wasm",
+    "!node_modules/next/dist/compiled/webpack/bundle4.js",
+    "!node_modules/next/dist/compiled/webpack/bundle5.js",
+    "!node_modules/next/dist/compiled/terser/bundle.min.js",
+    "!node_modules/sharp/**/*"
+]
+external_node_modules = []
+node_bundler = "nft"
