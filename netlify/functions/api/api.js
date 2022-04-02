@@ -39,6 +39,7 @@ exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
     // the first request because we need the host and port.
     let bridge;
     const getBridge = (event) => {
+        console.log('getting bridge')
         if (bridge) {
             return bridge;
         }
@@ -47,7 +48,9 @@ exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
         const { host } = event.headers;
         const protocol = event.headers['x-forwarded-proto'] || 'http';
         base = `${protocol}://${host}`;
+        console.log('getting NextServer class')
         const NextServer = getNextServer();
+        console.log('instantiating NextServer')
         const nextServer = new NextServer({
             conf,
             dir,
@@ -55,22 +58,28 @@ exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
             hostname: url.hostname,
             port,
         });
+        console.log('about to get request handler')
         const requestHandler = nextServer.getRequestHandler();
+        console.log('instantiating Server')
         const server = new Server(async (req, res) => {
+            console.log("handler in Server")
             try {
+                console.log("calling requestHandler")
                 await requestHandler(req, res);
+                console.log("requestHandler returned")
             }
             catch (error) {
                 console.error(error);
                 throw new Error('Error handling request. See function logs for details.');
             }
         });
+        console.log('instantiating Bridge')
         bridge = new Bridge(server);
         bridge.listen();
+        console.log('bridge instantiated')
         return bridge;
     };
     return async function handler(event, context) {
-        context.callbackWaitsForEmptyEventLoop = false;
         var _a, _b, _c;
         let requestMode = mode;
         // Ensure that paths are encoded - but don't double-encode them
