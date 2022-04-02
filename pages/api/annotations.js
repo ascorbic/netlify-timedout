@@ -1,5 +1,5 @@
 import prisma from '../../lib/prisma'
-
+console.log("imported annotations module", new Date().toISOString())
 
 export default async function handle(req, res) {
   try {
