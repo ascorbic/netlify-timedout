@@ -264,14 +264,22 @@ class Bridge {
 
       const opts = { hostname: '127.0.0.1', port, path, method };
       const req = request(opts, res => {
+        console.log('handlign request')
         const response = res;
         /**
          * @type {Buffer[]}
          */
         const respBodyChunks = [];
-        response.on('data', chunk => respBodyChunks.push(Buffer.from(chunk)));
-        response.on('error', reject);
+        response.on('data', chunk => {
+          console.log('push chunk')
+          respBodyChunks.push(Buffer.from(chunk))
+        });
+        response.on('error', (err) => {
+          console.log('rejecting', err)
+          reject(err);
+        });
         response.on('end', () => {
+          console.log('ended')
           const bodyBuffer = Buffer.concat(respBodyChunks);
           delete response.headers.connection;
 
@@ -291,6 +299,7 @@ class Bridge {
       });
 
       req.on('error', error => {
+        console.log('on error', error)
         setTimeout(() => {
           // this lets express print the true error of why the connection was closed.
           // it is probably 'Cannot set headers after they are sent to the client'
@@ -313,7 +322,11 @@ class Bridge {
         }
       }
 
-      if (body) req.write(body);
+      if (body) {
+        console.log('writing body')
+        req.write(body)
+      };
+      console.log('ending')
       req.end();
     });
   }
