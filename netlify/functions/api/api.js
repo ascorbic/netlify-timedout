@@ -41,7 +41,7 @@ exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
     // the first request because we need the host and port.
     let bridge;
     const getBridge = (event) => {
-        console.log('getting bridge')
+        console.timeLog("request", 'getting bridge')
         if (bridge) {
             return bridge;
         }
@@ -50,10 +50,10 @@ exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
         const { host } = event.headers;
         const protocol = event.headers['x-forwarded-proto'] || 'http';
         base = `${protocol}://${host}`;
-        console.log('getting NextServer class')
+        console.timeLog("request", 'getting NextServer class')
         // const NextServer = getNextServer();
 
-        console.log('instantiating NextServer')
+        console.timeLog("request", 'instantiating NextServer')
         const nextServer = new NextServer({
             conf,
             dir,
@@ -61,38 +61,40 @@ exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
             hostname: url.hostname,
             port,
         });
-        console.log('about to get request handler')
+        console.timeLog("request", 'about to get request handler')
         const requestHandler = nextServer.getRequestHandler();
-        console.log('instantiating Server')
+        console.timeLog("request", 'instantiating Server')
         const server = new Server(async (req, res) => {
-            console.log("handler in Server")
+            console.timeLog("request", "handler in Server")
             try {
-                console.log("calling requestHandler")
+                console.timeLog("request", "calling requestHandler")
                 await requestHandler(req, res);
-                console.log("requestHandler returned")
+                console.timeLog("request", "requestHandler returned")
             }
             catch (error) {
                 console.error(error);
                 throw new Error('Error handling request. See function logs for details.');
             }
         });
-        console.log('instantiating Bridge')
+        console.timeLog("request", 'instantiating Bridge')
         bridge = new Bridge(server);
         bridge.listen();
-        console.log('bridge instantiated')
+        console.timeLog("request", 'bridge instantiated')
         return bridge;
     };
     return async function handler(event, context) {
         var _a, _b, _c;
         let requestMode = mode;
+        console.time("request")
         // Ensure that paths are encoded - but don't double-encode them
         event.path = new URL(event.rawUrl).pathname;
         // Next expects to be able to parse the query from the URL
         const query = new URLSearchParams(event.queryStringParameters).toString();
         event.path = query ? `${event.path}?${query}` : event.path;
-        console.log("about to handle request")
+        console.timeLog("request", "request received")
+        console.timeLog("request", "about to handle request")
         const { headers, ...result } = await getBridge(event).launcher(event, context);
-        console.log("handled request")
+        console.timeLog("request", "handled request")
         // Convert all headers to multiValueHeaders
         const multiValueHeaders = getMultiValueHeaders(headers);
         if ((_b = (_a = multiValueHeaders['set-cookie']) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.includes('__prerender_bypass')) {
@@ -113,7 +115,7 @@ exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
             multiValueHeaders['cache-control'] = ['public, max-age=0, must-revalidate'];
         }
         multiValueHeaders['x-render-mode'] = [requestMode];
-        console.log(`[${event.httpMethod}] ${event.path} (${requestMode === null || requestMode === void 0 ? void 0 : requestMode.toUpperCase()})`);
+        console.timeLog("request", `[${event.httpMethod}] ${event.path} (${requestMode === null || requestMode === void 0 ? void 0 : requestMode.toUpperCase()})`);
         return {
             ...result,
             multiValueHeaders,

@@ -160,7 +160,7 @@ class Server {
         console.error(err);
     }
     async handleRequest(req, res, parsedUrl) {
-        console.log('hamdlign request')
+        console.timeLog("request", 'hamdlign request')
         try {
             var ref23, ref1, ref2, ref3, ref4, ref5;
             const urlParts = (req.url || '').split('?');
@@ -305,7 +305,7 @@ class Server {
                 return;
             }
             res.statusCode = 200;
-            console.log('running')
+            console.timeLog("request", 'running')
             return await this.run(req, res, parsedUrl);
         } catch (err) {
             if (err && typeof err === 'object' && err.code === 'ERR_INVALID_URL' || err instanceof _utils1.DecodeError) {
@@ -464,7 +464,7 @@ class Server {
             type: 'route',
             name: 'Catchall render',
             fn: async (req, res, _params, parsedUrl)=>{
-                console.log('catchall');
+                console.timeLog("request", 'catchall');
                 let { pathname , query  } = parsedUrl;
                 if (!pathname) {
                     throw new Error('pathname is undefined');
@@ -487,10 +487,10 @@ class Server {
                     };
                 }
                 if (pathname === '/api' || pathname.startsWith('/api/')) {
-                    console.log('about to handle api req')
+                    console.timeLog("request", 'about to handle api req')
                     delete query._nextBubbleNoFallback;
                     const handled = await this.handleApiRequest(req, res, pathname, query);
-                    console.log('handled api req')
+                    console.timeLog("request", 'handled api req')
                     if (handled) {
                         return {
                             finished: true
@@ -554,7 +554,7 @@ class Server {
    * @param res http response
    * @param pathname path of request
    */ async handleApiRequest(req, res, pathname, query) {
-       console.log('handlign api req')
+       console.timeLog("request", 'handlign api req')
         let page = pathname;
         let params = false;
         let pageFound = !(0, _utils).isDynamicRoute(page) && await this.hasPage(page);
@@ -583,7 +583,7 @@ class Server {
             }
             throw err;
         }
-        console.log('about to run api')
+        console.timeLog("request", 'about to run api')
         return this.runApi(req, res, query, params, page, builtPagePath);
     }
     getDynamicRoutes() {
@@ -604,9 +604,9 @@ class Server {
     async run(req, res, parsedUrl) {
         this.handleCompression(req, res);
         try {
-            console.log('about to execute')
+            console.timeLog("request", 'about to execute')
             const matched = await this.router.execute(req, res, parsedUrl);
-            console.log('executed')
+            console.timeLog("request", 'executed')
             if (matched) {
                 return;
             }

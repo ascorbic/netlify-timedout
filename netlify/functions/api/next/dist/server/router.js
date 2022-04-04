@@ -134,7 +134,7 @@ class Router {
                     requireBasePath: false,
                     match: route('/:path*'),
                     fn: async (checkerReq, checkerRes, params, parsedCheckerUrl) => {
-                        console.log('calling checker fn')
+                        console.timeLog("request", 'calling checker fn')
                         let { pathname } = parsedCheckerUrl;
                         pathname = (0, _normalizeTrailingSlash).removePathTrailingSlash(pathname || '/');
                         if (!pathname) {
@@ -142,9 +142,9 @@ class Router {
                                 finished: false
                             };
                         }
-                        console.log('about to call page checker')
+                        console.timeLog("request", 'about to call page checker')
                         if (await memoizedPageChecker(pathname)) {
-                            console.log('about to call catchall checker')
+                            console.timeLog("request", 'about to call catchall checker')
                             return this.catchAllRoute.fn(checkerReq, checkerRes, params, parsedCheckerUrl);
                         }
                         return {
@@ -215,7 +215,7 @@ class Router {
             }
             // Check if the match function matched
             if (newParams) {
-                console.log('matched', testRoute.name, currentPathname);
+                console.timeLog("request", 'matched', testRoute.name, currentPathname);
                 // since we require basePath be present for non-custom-routes we
                 // 404 here when we matched an fs route
                 if (!keepBasePath) {
@@ -229,12 +229,12 @@ class Router {
                     }
                     parsedUrlUpdated.pathname = currentPathname;
                 }
-                console.log('about to call route fn', testRoute.name);
+                console.timeLog("request", 'about to call route fn', testRoute.name);
                 const result = await testRoute.fn(req, res, newParams, parsedUrlUpdated);
-                console.log('called route fn', testRoute.name);
+                console.timeLog("request", 'called route fn', testRoute.name);
                 // The response was handled
                 if (result.finished) {
-                    console.log('route fn finished', testRoute.name);
+                    console.timeLog("request", 'route fn finished', testRoute.name);
                     this.seenRequests.delete(req);
                     return true;
                 }
@@ -260,7 +260,7 @@ class Router {
                     }
                 }
 
-                console.log('route fn not finished', testRoute.name);
+                console.timeLog("request", 'route fn not finished', testRoute.name);
             }
 
         }
