@@ -70,8 +70,10 @@ function _interopRequireWildcard(obj) {
 }
 class NextNodeServer extends _baseServer.default {
     constructor(options){
+        console.timeLog('request', 'In constructor')
         // Initialize super class
         super(options);
+        console.timeLog('request', 'Called superclass')
         this.compression = this.nextConfig.compress && this.nextConfig.target === 'server' ? (0, _compression).default() : undefined;
         this._validFilesystemPathSet = null;
         this.middlewareBetaWarning = (0, _utils).execOnce(()=>{
