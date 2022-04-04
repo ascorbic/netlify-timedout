@@ -26,8 +26,12 @@ async function loadDefaultErrorComponents(distDir, { hasConcurrentFeatures  }) {
     };
 }
 async function loadComponents(distDir, pathname, serverless) {
+    console.timeLog("request", 'loading components', pathname);
     if (serverless) {
+        console.timeLog("request", 'loading serverless components');
+        
         const ComponentMod = await (0, _require).requirePage(pathname, distDir, serverless);
+        console.timeLog("request", 'requirePage returned');
         if (typeof ComponentMod === 'string') {
             return {
                 Component: ComponentMod,
@@ -43,6 +47,7 @@ async function loadComponents(distDir, pathname, serverless) {
         getServerSideProps = await getServerSideProps;
         const pageConfig = await ComponentMod.config || {
         };
+        console.timeLog("request", 'loading serverless components returned');
         return {
             Component,
             pageConfig,
@@ -52,18 +57,22 @@ async function loadComponents(distDir, pathname, serverless) {
             ComponentMod
         };
     }
+    console.timeLog("request", 'loading non-serverless components', pathname);
     const [DocumentMod, AppMod, ComponentMod] = await Promise.all([
         (0, _require).requirePage('/_document', distDir, serverless),
         (0, _require).requirePage('/_app', distDir, serverless),
         (0, _require).requirePage(pathname, distDir, serverless), 
     ]);
+    console.timeLog("request", 'requirePage returned', pathname);
     const [buildManifest, reactLoadableManifest] = await Promise.all([
         require((0, _path).join(distDir, _constants.BUILD_MANIFEST)),
         require((0, _path).join(distDir, _constants.REACT_LOADABLE_MANIFEST)), 
     ]);
+    console.timeLog("request", 'required manifests');
     const Component = (0, _interopDefault).interopDefault(ComponentMod);
     const Document = (0, _interopDefault).interopDefault(DocumentMod);
     const App = (0, _interopDefault).interopDefault(AppMod);
+    console.timeLog("request", 'loaded components', pathname);
     const { getServerSideProps , getStaticProps , getStaticPaths  } = ComponentMod;
     return {
         App,

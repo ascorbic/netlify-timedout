@@ -70,6 +70,7 @@ function _interopRequireWildcard(obj) {
 }
 class NextNodeServer extends _baseServer.default {
     constructor(options){
+        console.log({console})
         console.timeLog('request', 'In constructor')
         // Initialize super class
         super(options);
@@ -100,18 +101,18 @@ class NextNodeServer extends _baseServer.default {
             console.timeLog('request', 'Loaded image optimization')
 
         }
+
         if (!this.renderOpts.dev) {
             // pre-warm _document and _app as these will be
             // needed for most requests
-            console.timeLog('request', 'Loading _document')
-
-            (0, _loadComponents).loadComponents(this.distDir, '/_document', this._isLikeServerless).catch(()=>{
+            (0, _loadComponents).loadComponents(this.distDir, '/_document', this._isLikeServerless).catch((e)=>{
+                console.timeLog("request", "Failed to load _document");
             });
-            console.timeLog('request', 'Loading _app')
+            // console.timeLog('request', 'Loading _app')
 
-            (0, _loadComponents).loadComponents(this.distDir, '/_app', this._isLikeServerless).catch(()=>{
+            (0, _loadComponents).loadComponents(this.distDir, '/_app', this._isLikeServerless).catch((e)=>{
+                console.timeLog("request", "Failed to load _app");
             });
-            console.timeLog('request', 'Loaded _document and _app')
 
         }
     }

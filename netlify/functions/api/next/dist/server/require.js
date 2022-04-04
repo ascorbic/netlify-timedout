@@ -41,11 +41,17 @@ function getPagePath(page, distDir, serverless, dev, locales) {
     return (0, _path).join(serverBuildPath, pagePath);
 }
 function requirePage(page, distDir, serverless) {
+    console.timeLog('request', 'requirePage', page);
     const pagePath = getPagePath(page, distDir, serverless);
     if (pagePath.endsWith('.html')) {
         return _fs.promises.readFile(pagePath, 'utf8');
     }
-    return require(pagePath);
+    console.timeLog('request', 'about to require', page, pagePath);
+
+    const res =  require(pagePath);
+
+    console.timeLog('request', 'did require', page);
+    return res;
 }
 function requireFontManifest(distDir, serverless) {
     const serverBuildPath = (0, _path).join(distDir, serverless ? _constants.SERVERLESS_DIRECTORY : _constants.SERVER_DIRECTORY);
