@@ -36,11 +36,11 @@ function replaceBasePath(pathname, basePath) {
     return pathname;
 }
 class Router {
-    constructor({ basePath ='' , headers =[] , fsRoutes =[] , rewrites ={
+    constructor({ basePath = '', headers = [], fsRoutes = [], rewrites = {
         beforeFiles: [],
         afterFiles: [],
         fallback: []
-    } , redirects =[] , catchAllRoute , catchAllMiddleware , dynamicRoutes =[] , pageChecker , useFileSystemPublicRoutes , locales =[]  }){
+    }, redirects = [], catchAllRoute, catchAllMiddleware, dynamicRoutes = [], pageChecker, useFileSystemPublicRoutes, locales = [] }) {
         this.basePath = basePath;
         this.headers = headers;
         this.fsRoutes = fsRoutes;
@@ -68,7 +68,7 @@ class Router {
         // memoize page check calls so we don't duplicate checks for pages
         const pageChecks = {
         };
-        const memoizedPageChecker = async (p)=>{
+        const memoizedPageChecker = async (p) => {
             p = (0, _normalizeLocalePath).normalizeLocalePath(p, this.locales).pathname;
             if (pageChecks[p] !== undefined) {
                 return pageChecks[p];
@@ -78,10 +78,10 @@ class Router {
             return result;
         };
         let parsedUrlUpdated = parsedUrl;
-        const applyCheckTrue = async (checkParsedUrl)=>{
+        const applyCheckTrue = async (checkParsedUrl) => {
             const originalFsPathname = checkParsedUrl.pathname;
             const fsPathname = replaceBasePath(originalFsPathname, this.basePath);
-            for (const fsRoute of this.fsRoutes){
+            for (const fsRoute of this.fsRoutes) {
                 const fsParams = fsRoute.match(fsPathname);
                 if (fsParams) {
                     checkParsedUrl.pathname = fsPathname;
@@ -96,7 +96,7 @@ class Router {
             // If we didn't match a page check dynamic routes
             if (!matchedPage) {
                 const normalizedFsPathname = (0, _normalizeLocalePath).normalizeLocalePath(fsPathname, this.locales).pathname;
-                for (const dynamicRoute of this.dynamicRoutes){
+                for (const dynamicRoute of this.dynamicRoutes) {
                     if (dynamicRoute.match(normalizedFsPathname)) {
                         matchedPage = true;
                     }
@@ -133,8 +133,8 @@ class Router {
                     name: 'page checker',
                     requireBasePath: false,
                     match: route('/:path*'),
-                    fn: async (checkerReq, checkerRes, params, parsedCheckerUrl)=>{
-                        let { pathname  } = parsedCheckerUrl;
+                    fn: async (checkerReq, checkerRes, params, parsedCheckerUrl) => {
+                        let { pathname } = parsedCheckerUrl;
                         pathname = (0, _normalizeTrailingSlash).removePathTrailingSlash(pathname || '/');
                         if (!pathname) {
                             return {
@@ -148,7 +148,7 @@ class Router {
                             finished: false
                         };
                     }
-                }, 
+                },
             ] : [],
             ...this.rewrites.afterFiles,
             ...this.rewrites.fallback.length ? [
@@ -157,22 +157,22 @@ class Router {
                     name: 'dynamic route/page check',
                     requireBasePath: false,
                     match: route('/:path*'),
-                    fn: async (_checkerReq, _checkerRes, _params, parsedCheckerUrl)=>{
+                    fn: async (_checkerReq, _checkerRes, _params, parsedCheckerUrl) => {
                         return {
                             finished: await applyCheckTrue(parsedCheckerUrl)
                         };
                     }
                 },
-                ...this.rewrites.fallback, 
+                ...this.rewrites.fallback,
             ] : [],
             // We only check the catch-all route if public page routes hasn't been
             // disabled
             ...this.useFileSystemPublicRoutes ? [
                 this.catchAllRoute
-            ] : [], 
+            ] : [],
         ];
         const originallyHadBasePath = !this.basePath || (0, _requestMeta).getRequestMeta(req, '_nextHadBasePath');
-        for (const testRoute of allRoutes){
+        for (const testRoute of allRoutes) {
             // if basePath is being used, the basePath will still be included
             // in the pathname here to allow custom-routes to require containing
             // it or not, filesystem routes and pages must always include the basePath
@@ -212,6 +212,7 @@ class Router {
             }
             // Check if the match function matched
             if (newParams) {
+                console.log('matched', testRoute.name, currentPathname);
                 // since we require basePath be present for non-custom-routes we
                 // 404 here when we matched an fs route
                 if (!keepBasePath) {
@@ -225,10 +226,12 @@ class Router {
                     }
                     parsedUrlUpdated.pathname = currentPathname;
                 }
-                console.log('about to call route fn')
+                console.log('about to call route fn', testRoute.name);
                 const result = await testRoute.fn(req, res, newParams, parsedUrlUpdated);
+                console.log('called route fn', testRoute.name);
                 // The response was handled
                 if (result.finished) {
+                    console.log('route fn finished', testRoute.name);
                     this.seenRequests.delete(req);
                     return true;
                 }
@@ -253,7 +256,10 @@ class Router {
                         return true;
                     }
                 }
+
+                console.log('route fn not finished', testRoute.name);
             }
+
         }
         this.seenRequests.delete(req);
         return false;
