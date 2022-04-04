@@ -369,9 +369,9 @@ class NextNodeServer extends _baseServer.default {
         };
     }
     async runApi(req, res, query, params, page, builtPagePath) {
-        console.log('running api. about to require', builtPagePath)
+        console.log('running api. about to require', builtPagePath, new Date().toISOString())
         const pageModule = await require(builtPagePath);
-        console.log('required', builtPagePath)
+        console.log('required', builtPagePath, new Date().toISOString())
         query = {
             ...query,
             ...params
