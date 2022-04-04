@@ -369,7 +369,9 @@ class NextNodeServer extends _baseServer.default {
         };
     }
     async runApi(req, res, query, params, page, builtPagePath) {
+        console.log('running api. about to require', builtPagePath)
         const pageModule = await require(builtPagePath);
+        console.log('required', builtPagePath)
         query = {
             ...query,
             ...params
@@ -383,6 +385,7 @@ class NextNodeServer extends _baseServer.default {
                 return true;
             }
         }
+        console.log('api resolver')
         await (0, _node1).apiResolver(req.originalRequest, res.originalResponse, query, pageModule, {
             ...this.renderOpts.previewProps,
             port: this.port,
@@ -390,6 +393,7 @@ class NextNodeServer extends _baseServer.default {
             // internal config so is not typed
             trustHostHeader: this.nextConfig.experimental.trustHostHeader
         }, this.minimalMode, this.renderOpts.dev, page);
+        console.log('did api resolver')
         return true;
     }
     async renderHTML(req, res, pathname, query, renderOpts) {
