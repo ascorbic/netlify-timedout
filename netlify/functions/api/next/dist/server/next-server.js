@@ -90,19 +90,29 @@ class NextNodeServer extends _baseServer.default {
             process.env.__NEXT_OPTIMIZE_CSS = JSON.stringify(true);
         }
         if (!this.minimalMode) {
+            console.timeLog('request', 'Loading image optimization')
+
             const { ImageOptimizerCache  } = require('./image-optimizer');
             this.imageResponseCache = new _responseCache.default(new ImageOptimizerCache({
                 distDir: this.distDir,
                 nextConfig: this.nextConfig
             }));
+            console.timeLog('request', 'Loaded image optimization')
+
         }
         if (!this.renderOpts.dev) {
             // pre-warm _document and _app as these will be
             // needed for most requests
+            console.timeLog('request', 'Loading _document')
+
             (0, _loadComponents).loadComponents(this.distDir, '/_document', this._isLikeServerless).catch(()=>{
             });
+            console.timeLog('request', 'Loading _app')
+
             (0, _loadComponents).loadComponents(this.distDir, '/_app', this._isLikeServerless).catch(()=>{
             });
+            console.timeLog('request', 'Loaded _document and _app')
+
         }
     }
     loadEnvConfig({ dev  }) {

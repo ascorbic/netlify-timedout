@@ -68,12 +68,16 @@ function _interopRequireWildcard(obj) {
 }
 class Server {
     constructor({ dir ='.' , quiet =false , conf , dev =false , minimalMode =false , customServer =true , hostname , port  }){
+        console.timeLog('request', 'Instantiating base server')
+
         var ref, ref1, ref2;
         this.customErrorNo404Warn = (0, _utils1).execOnce(()=>{
             Log.warn(`You have added a custom /_error page without a custom /404 page. This prevents the 404 page from being auto statically optimized.\nSee here for info: https://nextjs.org/docs/messages/custom-error-no-custom-404`);
         });
         this.dir = (0, _path).resolve(dir);
         this.quiet = quiet;
+        console.timeLog('request', 'Loading env')
+
         this.loadEnvConfig({
             dev
         });
@@ -93,6 +97,8 @@ class Server {
         this.minimalMode = minimalMode || !!process.env.NEXT_PRIVATE_MINIMAL_MODE;
         const serverComponents = this.nextConfig.experimental.serverComponents;
         this.serverComponentManifest = serverComponents ? this.getServerComponentManifest() : undefined;
+        console.timeLog('request', 'Setting up renderOpts')
+
         this.renderOpts = {
             poweredByHeader: this.nextConfig.poweredByHeader,
             canonicalBase: this.nextConfig.amp.canonicalBase || '',
@@ -114,6 +120,7 @@ class Server {
             crossOrigin: this.nextConfig.crossOrigin ? this.nextConfig.crossOrigin : undefined,
             reactRoot: this.nextConfig.experimental.reactRoot === true
         };
+        console.timeLog('request', 'Done renderOpts')
         // Only the `publicRuntimeConfig` key is exposed to the client side
         // It'll be rendered as part of __NEXT_DATA__ on the client side
         if (Object.keys(publicRuntimeConfig).length > 0) {
@@ -129,6 +136,7 @@ class Server {
         this.customRoutes = this.getCustomRoutes();
         this.router = new _router.default(this.generateRoutes());
         this.setAssetPrefix(assetPrefix);
+        console.timeLog('request', 'Creating incremental cache')
         this.incrementalCache = new _incrementalCache.IncrementalCache({
             fs: this.getCacheFilesystem(),
             dev,
