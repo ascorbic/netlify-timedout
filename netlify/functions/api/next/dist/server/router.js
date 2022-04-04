@@ -134,6 +134,7 @@ class Router {
                     requireBasePath: false,
                     match: route('/:path*'),
                     fn: async (checkerReq, checkerRes, params, parsedCheckerUrl) => {
+                        console.log('calling checker fn')
                         let { pathname } = parsedCheckerUrl;
                         pathname = (0, _normalizeTrailingSlash).removePathTrailingSlash(pathname || '/');
                         if (!pathname) {
@@ -141,7 +142,9 @@ class Router {
                                 finished: false
                             };
                         }
+                        console.log('about to call page checker')
                         if (await memoizedPageChecker(pathname)) {
+                            console.log('about to call catchall checker')
                             return this.catchAllRoute.fn(checkerReq, checkerRes, params, parsedCheckerUrl);
                         }
                         return {
