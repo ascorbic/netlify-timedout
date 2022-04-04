@@ -225,6 +225,7 @@ class Router {
                     }
                     parsedUrlUpdated.pathname = currentPathname;
                 }
+                console.log('about to call route fn')
                 const result = await testRoute.fn(req, res, newParams, parsedUrlUpdated);
                 // The response was handled
                 if (result.finished) {

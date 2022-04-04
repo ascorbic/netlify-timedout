@@ -160,6 +160,7 @@ class Server {
         console.error(err);
     }
     async handleRequest(req, res, parsedUrl) {
+        console.log('hamdlign request')
         try {
             var ref23, ref1, ref2, ref3, ref4, ref5;
             const urlParts = (req.url || '').split('?');
@@ -304,6 +305,7 @@ class Server {
                 return;
             }
             res.statusCode = 200;
+            console.log('running')
             return await this.run(req, res, parsedUrl);
         } catch (err) {
             if (err && typeof err === 'object' && err.code === 'ERR_INVALID_URL' || err instanceof _utils1.DecodeError) {
@@ -597,7 +599,9 @@ class Server {
     async run(req, res, parsedUrl) {
         this.handleCompression(req, res);
         try {
+            console.log('about to execute')
             const matched = await this.router.execute(req, res, parsedUrl);
+            console.log('executed')
             if (matched) {
                 return;
             }

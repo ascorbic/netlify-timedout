@@ -12,6 +12,8 @@ try {
 } catch {}
 const path = require("path");
 const pageRoot = path.resolve(path.join(__dirname, "../../../.next", config.target === "server" ? "server" : "serverless", "pages"));
+const NextServer = require('./next/dist/server/next-server').default
+
 exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
     var _a;
     // Change working directory into the site root
@@ -49,7 +51,8 @@ exports.handler = ((conf, app, pageRoot, staticManifest = [], mode = 'ssr') => {
         const protocol = event.headers['x-forwarded-proto'] || 'http';
         base = `${protocol}://${host}`;
         console.log('getting NextServer class')
-        const NextServer = getNextServer();
+        // const NextServer = getNextServer();
+
         console.log('instantiating NextServer')
         const nextServer = new NextServer({
             conf,
